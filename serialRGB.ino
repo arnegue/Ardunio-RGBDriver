@@ -1,44 +1,11 @@
 #include "Adafruit_NeoPixel.h"
-//#include "avr/power.h"
-
-//#define DEBUG
-
-//#define TABLE_NANO
-//#define COMPUTER_NANO
-#define KITCHEN_NANO
-
-#ifdef TABLE_NANO
-#define NUMPIXELS 42
-#define RGB_PIN A0
-#endif
-
-#ifdef COMPUTER_NANO
-#define NUMPIXELS 38
-#define RGB_PIN A5
-#endif
-
-#ifdef KITCHEN_NANO
-#define NUMPIXELS 65
-#define RGB_PIN A3 // TODO
-#define R_BTN_PIN 2
-#define G_BTN_PIN 3
-#define B_BTN_PIN 4
-#endif
-
-
-#define AMOUNT_CHARS_NEW ((NUMPIXELS *3) +2) //  42*LEDs a 3 RGB-Values + 2 braces
-#define AMOUNT_CHARS_OLD 7
-
-struct last_rgb_state {
-  uint8_t r;
-  uint8_t g;
-  uint8_t b;
-} l_rgb;
+#include "serialRGB.h"
 
 char bufferA[AMOUNT_CHARS_NEW];
 int bytesReceived = 0;
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, RGB_PIN, NEO_GRB + NEO_KHZ800);
 
+last_rgb_state l_rgb;
 
 void setup() {
   Serial.begin(115200);
@@ -53,7 +20,10 @@ void setup() {
   l_rgb.r = 0;
   l_rgb.g = 0;
   l_rgb.b = 0;
-#ifdef KITCHEN_NANO
+#ifdef KITCHEN_ESP // TODO
+  setup_esp();
+#endif
+#ifdef KITCHEN_NANO // TODO
   pinMode(R_BTN_PIN, INPUT);
   pinMode(G_BTN_PIN, INPUT);
   pinMode(B_BTN_PIN, INPUT);
@@ -66,7 +36,7 @@ void setup() {
 }
 
 void loop() {
-#ifdef KITCHEN_NANO
+#ifdef KITCHEN_ARDUINO // TODO
   check_changed(R_BTN_PIN, &l_rgb.r);
   check_changed(G_BTN_PIN, &l_rgb.g);
   check_changed(B_BTN_PIN, &l_rgb.b);
@@ -85,7 +55,7 @@ void loop() {
 }
 
 
-#ifdef KITCHEN_NANO
+#ifdef KITCHEN_ARDUINO // TODO
 void check_changed(uint8_t pin, uint8_t* rgb_val) {
   if (digitalRead(pin) == LOW) {
     *rgb_val = (*rgb_val == 0) ? 255 : 0;
