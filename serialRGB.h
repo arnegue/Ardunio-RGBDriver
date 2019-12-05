@@ -1,14 +1,18 @@
+#ifndef SERIAL_RGB_H
+#define SERIAL_RGB_H
 #include <stdint.h>
 
-//#define DEBUG
+//#define DEBUG_SERIAL
+#define ERROR_SERIAL
 
 //#define TABLE_NANO
 //#define COMPUTER_NANO
-#define KITCHEN_ESP
+//#define KITCHEN_ESP
+#define JENKINS_UNO
 
 #ifdef TABLE_NANO
 #define NUMPIXELS 42
-#define RGB_PIN A0
+#define RGB_PIN A1
 #endif
 
 #ifdef COMPUTER_NANO
@@ -16,12 +20,13 @@
 #define RGB_PIN A5
 #endif
 
+#ifdef JENKINS_UNO
+#define NUMPIXELS 4
+#define RGB_PIN A0
+#endif
+
 #ifdef KITCHEN_ESP
-#define NUMPIXELS 65
-#define RGB_PIN 12
-#define R_BTN_PIN 2
-#define G_BTN_PIN 3
-#define B_BTN_PIN 4
+#include "setup_esp.h" // define this after general RGB-definitions
 #endif
 
 #ifndef NUMPIXELS
@@ -30,10 +35,7 @@
 
 #define AMOUNT_CHARS_NEW ((NUMPIXELS *3) +2) //  42*LEDs a 3 RGB-Values + 2 braces
 #define AMOUNT_CHARS_OLD 7 // (X,X,X)
-
-#ifdef KITCHEN_ESP
-#include "setup_esp.h" // define this after general RGB-definitions
-#endif
+#define AMOUNT_CHARS_OLD_DEC 13// (123,123,123)
 
 struct last_rgb_state {
   uint8_t r;
@@ -41,6 +43,10 @@ struct last_rgb_state {
   uint8_t b;
 };
 
+static last_rgb_state l_rgb;
+
 
 void oldProtocol(uint8_t red, uint8_t green, uint8_t blue);
-void newProtocol();
+void newProtocol(char* buffer_pntr);
+
+#endif

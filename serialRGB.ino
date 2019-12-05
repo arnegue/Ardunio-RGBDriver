@@ -5,7 +5,6 @@ char bufferA[AMOUNT_CHARS_NEW];
 int bytesReceived = 0;
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, RGB_PIN, NEO_GRB + NEO_KHZ800);
 
-last_rgb_state l_rgb;
 
 void setup() {
   Serial.begin(115200);
@@ -23,49 +22,18 @@ void setup() {
 #ifdef KITCHEN_ESP // TODO
   setup_esp();
 #endif
-#ifdef KITCHEN_NANO // TODO
-  pinMode(R_BTN_PIN, INPUT);
-  pinMode(G_BTN_PIN, INPUT);
-  pinMode(B_BTN_PIN, INPUT);
-  /* Doesn't work since Nano only supports 2 interrupts (and only on Pin 2 and 3)
-    attachInterrupt(digitalPinToInterrupt(R_BTN_PIN), r_changed, RISING);
-    attachInterrupt(digitalPinToInterrupt(G_BTN_PIN), g_changed, RISING);
-    attachInterrupt(digitalPinToInterrupt(B_BTN_PIN), b_changed, RISING);
-  */
-#endif
 }
 
 void loop() {
-#ifdef KITCHEN_ARDUINO // TODO
-  check_changed(R_BTN_PIN, &l_rgb.r);
-  check_changed(G_BTN_PIN, &l_rgb.g);
-  check_changed(B_BTN_PIN, &l_rgb.b);
-  delay(200);
 
-#ifdef DEBUG
-  Serial.print("(");
-  Serial.print(l_rgb.r);
-  Serial.print(",");
-  Serial.print(l_rgb.g);
-  Serial.print(",");
-  Serial.print(l_rgb.b);
-  Serial.println(")");
-#endif
+#ifdef KITCHEN_ESP
+  esp_loop();
 #endif
 }
 
 
-#ifdef KITCHEN_ARDUINO // TODO
-void check_changed(uint8_t pin, uint8_t* rgb_val) {
-  if (digitalRead(pin) == LOW) {
-    *rgb_val = (*rgb_val == 0) ? 255 : 0;
-    oldProtocol(l_rgb.r, l_rgb.g, l_rgb.b);
-  }
-}
-#endif
-
-void newProtocol() {
-#ifdef DEBUG
+void newProtocol(char* buffer_pntr) {
+#ifdef DEBUG_SERIAL
   Serial.println("New Protocol");
 #endif
   int i = 1;
@@ -75,7 +43,7 @@ void newProtocol() {
 #else
   for (ledIndex = 0; ledIndex < NUMPIXELS; ledIndex++) {
 #endif
-    pixels.setPixelColor(ledIndex, pixels.Color(bufferA[i], bufferA[i + 1], bufferA[i + 2]));
+    pixels.setPixelColor(ledIndex, pixels.Color(buffer_pntr[i], buffer_pntr[i + 1], buffer_pntr[i + 2]));
     i = i + 3;
   }
   pixels.show();
@@ -83,7 +51,7 @@ void newProtocol() {
 
 
 void oldProtocol(uint8_t red, uint8_t green, uint8_t blue) {
-#ifdef DEBUG
+#ifdef DEBUG_SERIAL
   Serial.println("Old Protocol");
 #endif
   for (int ledIndex = 0; ledIndex < NUMPIXELS; ledIndex++) {
@@ -101,13 +69,13 @@ void serialEvent() {
   while (Serial.available()) {
     // get the new byte:
     char inChar =  (char)Serial.read();
-#ifdef DEBUG
+#ifdef DEBUG_SERIAL
     if (bytesReceived == 0) {
       Serial.println("New Message");
     }
 #endif
     if (bytesReceived == 0 && inChar != '(') {
-#ifdef DEBUG
+#ifdef ERROR_SERIAL
       Serial.print("Received weird message. Resetting, first byte was ");
       Serial.println((int)inChar);
 #endif
@@ -122,10 +90,12 @@ void serialEvent() {
       oldProtocol(bufferA[1], bufferA[3], bufferA[5]);
       bytesReceived = 0;
     } else if (bytesReceived == AMOUNT_CHARS_NEW && bufferA[0] == '('  && bufferA[AMOUNT_CHARS_NEW - 1] == ')') {
-      newProtocol();
+      newProtocol(bufferA);
       bytesReceived = 0;
     } else if (bytesReceived > AMOUNT_CHARS_NEW) {
+#ifdef ERROR_SERIAL
       Serial.println("Received too much, reset");
+#endif
       bytesReceived = 0;
     }
   }
