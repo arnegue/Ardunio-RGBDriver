@@ -7,8 +7,8 @@
 #include "SPIFFS.h"
 #include "ESPAsyncWebServer.h"
 
-const char* ssid = "FreibierFritz123";
-const char* password =  "teufels14brueck";
+const char* ssid = ""; // Put in here
+const char* password =  ""; // Put in here
 
 AsyncWebServer server(80);
 
@@ -72,9 +72,9 @@ void setup_esp() {
       byte g = (esp_buffer[5] - 48) * (100 + esp_buffer[6]  - 48) * 10 + (esp_buffer[7]  - 48);
       byte b = (esp_buffer[9] - 48) * (100 + esp_buffer[10] - 48) * 10 + (esp_buffer[11] - 48);
       oldProtocol(r, g, b);
-      #ifdef DEBUG_SERIAL
+#ifdef DEBUG_SERIAL
       Serial.println("Old Protocol (DEC)");
-      #endif
+#endif
       request->send(200);
       }
     // New Protocol (binary)
