@@ -4,7 +4,8 @@ This project is the main part of all RGB-LED-Strip-Proects: It finally displays 
 
 # How does this work
 
-Commands are sent via serial.
+Commands are sent via serial:
+
 * Baudrate: 115200
 * StopBits: 1
 * Parity: None
