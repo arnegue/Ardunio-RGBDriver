@@ -35,7 +35,7 @@
 
 #define AMOUNT_CHARS_NEW ((NUMPIXELS *3) +2) //  42*LEDs a 3 RGB-Values + 2 braces
 #define AMOUNT_CHARS_OLD 7 // (X,X,X)
-#define AMOUNT_CHARS_OLD_DEC 13// (123,123,123)
+#define AMOUNT_CHARS_OLD_DEC 13// (123,123,123) // Used by esp
 
 struct last_rgb_state {
   uint8_t r;

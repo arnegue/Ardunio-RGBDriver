@@ -10,11 +10,11 @@ void setup() {
   Serial.begin(115200);
   pixels.begin();
   oldProtocol(0, 0, 0); // Reset every LED
+#ifdef DEBUG_SERIAL
   Serial.print("RESET");
+#endif
   delay(100);
-  Serial.print('(');
-  Serial.print((char)NUMPIXELS);
-  Serial.print(')');
+  writeNumPixels();
 
   l_rgb.r = 0;
   l_rgb.g = 0;
@@ -31,6 +31,11 @@ void loop() {
 #endif
 }
 
+void writeNumPixels() {
+  Serial.print('(');
+  Serial.print((char)NUMPIXELS);
+  Serial.print(')');  
+}
 
 void newProtocol(char* buffer_pntr) {
 #ifdef DEBUG_SERIAL
