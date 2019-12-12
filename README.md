@@ -1,5 +1,3 @@
-# What does it do
-
 This project is the main part of all RGB-LED-Strip-Proects: It finally displays the LEDs.
 
 # How does this work
