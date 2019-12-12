@@ -1,4 +1,4 @@
-This project is the main part of all RGB-LED-Strip-Proects: It finally displays the LEDs.
+This project is the main part of all RGB-LED-Strip-Projects: It finally displays the LEDs (WS2812) using [neopixel](https://learn.adafruit.com/adafruit-neopixel-uberguide)-library 
 
 # How does this work
 
