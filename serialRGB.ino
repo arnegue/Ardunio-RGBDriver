@@ -31,36 +31,44 @@ void loop() {
 #endif
 }
 
+/**
+ * If a client connects via serial, write amount of own RGBs (for new protocol) to client
+ */
 void writeNumPixels() {
   Serial.print('(');
   Serial.print((char)NUMPIXELS);
   Serial.print(')');  
 }
 
+
+/**
+ * New Protocol (NUMPIXELS*RGB) (e.g. for 1 red, 1 green, 1 blue RGBs (NUMPIXELS=3) : 0x28 0xFF 0x00 0x00 0x00 0xFF 0x00 0x00 0x00 0xFF 0x29
+ */
 void newProtocol(char* buffer_pntr) {
 #ifdef DEBUG_SERIAL
   Serial.println("New Protocol");
 #endif
   int i = 1;
   int ledIndex = 0;
-#ifdef COMPUTER_NANO
-  for (ledIndex = NUMPIXELS - 1; ledIndex >= 0; ledIndex--) {
+#ifdef REVERSE_RGB
+  for (ledIndex = NUMPIXELS - 1; ledIndex >= 0; ledIndex-=3) {
 #else
-  for (ledIndex = 0; ledIndex < NUMPIXELS; ledIndex++) {
+  for (ledIndex = 0; ledIndex < NUMPIXELS; ledIndex+=3) {
 #endif
-    pixels.setPixelColor(ledIndex, pixels.Color(buffer_pntr[i], buffer_pntr[i + 1], buffer_pntr[i + 2]));
-    i = i + 3;
+    pixels.setPixelColor(ledIndex, buffer_pntr[i], buffer_pntr[i + 1], buffer_pntr[i + 2]);
   }
   pixels.show();
 }
 
-
+/**
+ * OldProtocol (R,G,B) (e.g. for white: 0x28 0xFF 0x2C 0xFF 0x2C 0xFF 0x29)
+ */
 void oldProtocol(uint8_t red, uint8_t green, uint8_t blue) {
 #ifdef DEBUG_SERIAL
   Serial.println("Old Protocol");
 #endif
   for (int ledIndex = 0; ledIndex < NUMPIXELS; ledIndex++) {
-    pixels.setPixelColor(ledIndex, pixels.Color(red, green, blue));
+    pixels.setPixelColor(ledIndex, red, green, blue);
   }
   pixels.show();
 
@@ -69,7 +77,9 @@ void oldProtocol(uint8_t red, uint8_t green, uint8_t blue) {
   l_rgb.b = blue;
 }
 
-
+/**
+ * On Serials event (incoming bytes), decide which protocol to use
+ */
 void serialEvent() {
   while (Serial.available()) {
     // get the new byte:

@@ -5,10 +5,10 @@
 //#define DEBUG_SERIAL
 #define ERROR_SERIAL
 
-//#define TABLE_NANO
+#define TABLE_NANO
 //#define COMPUTER_NANO
 //#define KITCHEN_ESP
-#define JENKINS_UNO
+//#define JENKINS_UNO
 
 #ifdef TABLE_NANO
 #define NUMPIXELS 42
@@ -18,6 +18,7 @@
 #ifdef COMPUTER_NANO
 #define NUMPIXELS 38
 #define RGB_PIN A5
+#define REVERSE_RGB
 #endif
 
 #ifdef JENKINS_UNO
@@ -37,7 +38,7 @@
 #define AMOUNT_CHARS_OLD 7 // (X,X,X)
 #define AMOUNT_CHARS_OLD_DEC 13// (123,123,123) // Used by esp
 
-struct last_rgb_state {
+struct last_rgb_state { // TODO whyn ot use strip.Color instead
   uint8_t r;
   uint8_t g;
   uint8_t b;
