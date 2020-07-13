@@ -50,12 +50,13 @@ void newProtocol(char* buffer_pntr) {
 #endif
   int i = 1;
   int ledIndex = 0;
-#ifdef REVERSE_RGB
-  for (ledIndex = NUMPIXELS - 1; ledIndex >= 0; ledIndex-=3) {
+#ifdef COMPUTER_NANO
+  for (ledIndex = NUMPIXELS - 1; ledIndex >= 0; ledIndex--) {
 #else
-  for (ledIndex = 0; ledIndex < NUMPIXELS; ledIndex+=3) {
+  for (ledIndex = 0; ledIndex < NUMPIXELS; ledIndex++) {
 #endif
-    pixels.setPixelColor(ledIndex, buffer_pntr[i], buffer_pntr[i + 1], buffer_pntr[i + 2]);
+    pixels.setPixelColor(ledIndex, pixels.Color(buffer_pntr[i], buffer_pntr[i + 1], buffer_pntr[i + 2]));
+    i = i + 3;
   }
   pixels.show();
 }
@@ -68,7 +69,7 @@ void oldProtocol(uint8_t red, uint8_t green, uint8_t blue) {
   Serial.println("Old Protocol");
 #endif
   for (int ledIndex = 0; ledIndex < NUMPIXELS; ledIndex++) {
-    pixels.setPixelColor(ledIndex, red, green, blue);
+    pixels.setPixelColor(ledIndex, pixels.Color(red, green, blue));
   }
   pixels.show();
 

@@ -18,7 +18,6 @@
 #ifdef COMPUTER_NANO
 #define NUMPIXELS 38
 #define RGB_PIN A5
-#define REVERSE_RGB
 #endif
 
 #ifdef JENKINS_UNO
