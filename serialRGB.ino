@@ -50,7 +50,7 @@ void newProtocol(char* buffer_pntr) {
 #endif
   int i = 1;
   int ledIndex = 0;
-#ifdef COMPUTER_NANO
+#ifdef REVERTED
   for (ledIndex = NUMPIXELS - 1; ledIndex >= 0; ledIndex--) {
 #else
   for (ledIndex = 0; ledIndex < NUMPIXELS; ledIndex++) {
